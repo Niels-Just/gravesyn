@@ -1,0 +1,50 @@
+name: security
+on: [push, pull_request]
+permissions:
+  contents: read
+
+# Fails the pipeline if anything sensitive is committed, now or anywhere in
+# history. Output names files or counts matches, never the matched text, so
+# the public log can't leak what it caught.
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Secret formats (gitleaks, full history)
+        run: |
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
+            | tar -xz gitleaks
+          ./gitleaks git --redact --no-banner --exit-code 1 .
+
+      - name: Files that never belong in the repo
+        run: |
+          bad=$(git ls-files | grep -E '(^|/)\.env|(^|/)\.dev\.vars|\.(pem|key|p12|pfx|keystore)$' || true)
+          if [ -n "$bad" ]; then echo "::error::Remove these files:"; echo "$bad"; exit 1; fi
+
+      - name: Personal data (email addresses in files or commit metadata)
+        run: |
+          # git@github.com is GitHub's SSH user, not an address.
+          files=$(git grep -o -I -E '[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[a-z]{2,}' -- . ':!package-lock.json' ':!uv.lock' | grep -v ':git@github\.com$' | cut -d: -f1 | sort -u || true)
+          if [ -n "$files" ]; then echo "::error::Email addresses in:"; echo "$files"; fail=1; fi
+          others=$(git log --all --format='%ae%n%ce' | sort -u | grep -v -E '@users\.noreply\.github\.com$|^noreply@github\.com$' | wc -l)
+          if [ "$others" != "0" ]; then echo "::error::$others commit email(s) are not GitHub noreply addresses"; fail=1; fi
+          exit ${fail:-0}
+
+      - name: Project-specific patterns (list kept in a repository secret)
+        env:
+          PATTERNS: ${{ secrets.SENSITIVE_PATTERNS }}
+        run: |
+          if [ -z "$PATTERNS" ]; then echo "::error::Secret SENSITIVE_PATTERNS is not set"; exit 1; fi
+          printf '%s\n' "$PATTERNS" | sed '/^$/d' > "$RUNNER_TEMP/p"
+          fail=0
+          paths=$(git ls-files | grep -i -E -f "$RUNNER_TEMP/p" || true)
+          if [ -n "$paths" ]; then echo "::error::Sensitive file paths:"; echo "$paths"; fail=1; fi
+          files=$(git grep -l -I -i -E -f "$RUNNER_TEMP/p" -- . ':!package-lock.json' ':!uv.lock' || true)
+          if [ -n "$files" ]; then echo "::error::Sensitive content in:"; echo "$files"; fail=1; fi
+          hits=$(git log --all -p --format='%B' | grep -c -i -E -f "$RUNNER_TEMP/p" || true)
+          if [ "$hits" != "0" ]; then echo "::error::$hits sensitive line(s) in commit history"; fail=1; fi
+          exit $fail
