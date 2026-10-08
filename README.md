@@ -10,6 +10,11 @@ settled with whatever photos happen to exist. Gravesyn makes the documentation
 systematic and checks the repair automatically, criterion by criterion, with
 the clause in the standard each verdict rests on.
 
+The app is only the gateway between the crew and the model: it takes good,
+comparable photos and sends them. The crew is never asked what is wrong.
+Finding defects and deciding whether the repair is good enough is the model's
+job, so the quality assurance doesn't depend on who was on site.
+
 This repository describes the product. The source code is proprietary and not
 published; a live demo and, under an NDA, read access to the code are available
 on request.
@@ -17,15 +22,15 @@ on request.
 <p align="center">
   <img src="screenshots/app-phase.png" width="24%" alt="Choosing the phase: before, during or after">
   <img src="screenshots/app-tilt-ready.png" width="24%" alt="Phone level, shutter open">
-  <img src="screenshots/app-defects.png" width="24%" alt="Flagging defects after a photo">
+  <img src="screenshots/app-no-marking.png" width="24%" alt="The crew doesn't look for defects; the system does">
   <img src="screenshots/app-assessment.png" width="24%" alt="Assessment per criterion with the clause in the standard">
 </p>
-<p align="center"><sub>Before, during or after · level: ready · flag what is wrong · assessment with its grounds</sub></p>
+<p align="center"><sub>Before, during or after · level: ready · nothing to mark, the system finds the defects · assessment with its grounds</sub></p>
 <p align="center">
   <img src="screenshots/app-login.png" width="24%" alt="One login per person">
   <img src="screenshots/app-site.png" width="24%" alt="Choosing the site, address found from GPS">
   <img src="screenshots/app-photos.png" width="24%" alt="The case: phases done and the assessment button">
-  <img src="screenshots/app-guide.png" width="24%" alt="Visual guide to the defect types">
+  <img src="screenshots/app-help.png" width="24%" alt="Help: who finds the defects">
 </p>
 <p align="center"><sub>Captured from the app with a simulated camera, sensor and address; the trench images are generated.
 The assessment shown is a real run of a model trained only on synthetic images, which is why it
@@ -117,7 +122,7 @@ A verdict is only as good as the evidence for it:
 
 | | |
 |---|---|
-| Field app | 16 unit tests · a 25-step browser test of the whole field session, with and without a server |
+| Field app | 14 unit tests · a browser test of the whole field session, with and without a server (22 and 26 steps) |
 | Backend | 13 tests against a real PostgreSQL |
 | Model | 13 tests, covering the masked loss and the assessment rules first |
 
@@ -129,7 +134,7 @@ data, files that never belong in a repository) on every push.
 - The app, backend and model pipeline are built and tested end to end.
 - The app is in field testing with a small invited group.
 - **The model is not yet trained on real photos.** It has been proven on
-  synthetic images, where it reaches a validation kappa of 0.84 and 0.82 on
+  synthetic images, where it reaches a validation kappa of 1.00 and 0.88 on
   edge and shoulder criteria. Real photos from the field are the next step, and
   until a criterion clears the threshold on real data the app says "can't be
   decided" for it.
