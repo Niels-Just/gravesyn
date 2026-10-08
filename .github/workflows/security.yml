@@ -30,7 +30,8 @@ jobs:
           # git@github.com is GitHub's SSH user, not an address.
           files=$(git grep -o -I -E '[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[a-z]{2,}' -- . ':!package-lock.json' ':!uv.lock' | grep -v ':git@github\.com$' | cut -d: -f1 | sort -u || true)
           if [ -n "$files" ]; then echo "::error::Email addresses in:"; echo "$files"; fail=1; fi
-          others=$(git log --all --format='%ae%n%ce' | sort -u | grep -v -E '@users\.noreply\.github\.com$|^noreply@github\.com$' | wc -l)
+          # Edits made on github.com are committed by GitHub's own noreply address under the owner's address, which is accepted.
+          others=$(git log --all --format='%ce|%ae' | awk -F'|' '$1 != "noreply@" "github.com" { print $1; print $2 }' | sort -u | grep -v -E '@users\.noreply\.github\.com$|^noreply@github\.com$' | wc -l)
           if [ "$others" != "0" ]; then echo "::error::$others commit email(s) are not GitHub noreply addresses"; fail=1; fi
           exit ${fail:-0}
 
