@@ -39,7 +39,7 @@ leaves most criteria undecided.</sub></p>
 ## What it does
 
 - **One case per excavation, in three phases.** *Before* shows the road as it was,
-  which settles disputes about pre-existing damage. *Under* shows the open
+  which settles disputes about pre-existing damage. *During* shows the open
   trench and its layers. *After* is the finished repair, the part that is
   assessed. A site can be resumed days later, nearest site first.
 - **Assessment with its grounds.** For each of the eight criteria a photo can
