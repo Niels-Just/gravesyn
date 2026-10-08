@@ -22,26 +22,31 @@ on request.
 <p align="center">
   <img src="screenshots/app-phase.png" width="24%" alt="Choosing the phase: before, during or after">
   <img src="screenshots/app-tilt-ready.png" width="24%" alt="Phone level, shutter open">
-  <img src="screenshots/app-no-marking.png" width="24%" alt="The crew doesn't look for defects; the system does">
+  <img src="screenshots/app-instant.png" width="24%" alt="The verdict on the camera screen right after the photo">
   <img src="screenshots/app-assessment.png" width="24%" alt="Assessment per criterion with the clause in the standard">
 </p>
-<p align="center"><sub>Before, during or after · level: ready · nothing to mark, the system finds the defects · assessment with its grounds</sub></p>
+<p align="center"><sub>Before, during or after · level: ready · the verdict right after the photo · each criterion with its clause</sub></p>
 <p align="center">
-  <img src="screenshots/app-login.png" width="24%" alt="One login per person">
-  <img src="screenshots/app-site.png" width="24%" alt="Choosing the site, address found from GPS">
-  <img src="screenshots/app-photos.png" width="24%" alt="The case: phases done and the assessment button">
+  <img src="screenshots/app-search.png" width="24%" alt="Finding a case again by its case number">
+  <img src="screenshots/app-photos.png" width="24%" alt="The case: its photos under before, during and after">
+  <img src="screenshots/app-no-marking.png" width="24%" alt="The crew doesn't look for defects; the system does">
   <img src="screenshots/app-help.png" width="24%" alt="Help: who finds the defects">
 </p>
-<p align="center"><sub>Captured from the app with a simulated camera, sensor and address; the trench images are generated.
+<p align="center"><sub>Find a case by case number or address · the case, phase by phase · nothing to mark · help in plain words.
+Captured from the app with a simulated camera, sensor and address; the trench images are generated.
 The assessment shown is a real run of a model trained only on synthetic images, which is why it
 leaves most criteria undecided.</sub></p>
 
 ## What it does
 
-- **One case per excavation, in three phases.** *Before* shows the road as it was,
-  which settles disputes about pre-existing damage. *During* shows the open
-  trench and its layers. *After* is the finished repair, the part that is
-  assessed. A site can be resumed days later, nearest site first.
+- **One case per excavation, in three phases, over weeks.** *Before* shows the
+  road as it was, which settles disputes about pre-existing damage. *During*
+  shows the open trench and its layers. *After* is the finished repair, the part
+  that is assessed. A case is found again by address or case number from any
+  phone, and its photos from every phone are shown together under each phase.
+- **Instant feedback.** An after-photo is assessed by itself, and the verdict
+  appears on the camera screen while the crew is still on site, so a failed
+  repair can be fixed before they leave.
 - **Assessment with its grounds.** For each of the eight criteria a photo can
   decide: met, not met, or can't be decided, with the photo it rests on and the
   clause, e.g. "DS 475, afsnit 6.5, s. 43". The five criteria no photo can show
@@ -122,8 +127,8 @@ A verdict is only as good as the evidence for it:
 
 | | |
 |---|---|
-| Field app | 14 unit tests · a browser test of the whole field session, with and without a server (22 and 26 steps) |
-| Backend | 13 tests against a real PostgreSQL |
+| Field app | 16 unit tests · a browser test of the whole field session, with and without a server (22 and 29 steps, including a second phone finding the case) |
+| Backend | 14 tests against a real PostgreSQL |
 | Model | 13 tests, covering the masked loss and the assessment rules first |
 
 Every repository runs its tests and a security scan (secret formats, personal
